@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAT6207 Assignment 1 — Cat/Dog Image Embedding Analysis &amp; KNN Classification</title>
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --accent: #ad1457;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  header {
+    background: linear-gradient(135deg, #f9c8dd, #ffd6e8);
+    color: #5b2333;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 8px; font-size: 26px; color: #5b2333; }
+  header p { margin: 0; font-size: 14px; opacity: .75; color: #5b2333; }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 48px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .card h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    border-left: 4px solid var(--accent);
+    padding-left: 12px;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 4px 0 16px;
+    padding-left: 16px;
+    line-height: 1.6;
+  }
+  .figure { text-align: center; }
+  .figure img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.10);
+  }
+  .caption {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .badge {
+    display: inline-block;
+    background: #ffd6e8;
+    color: #ad1457;
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 4px 4px 0;
+  }
+  .good { background: #d1fae5; color: #047857; }
+  .note {
+    background: #ffe3ee;
+    border: 1px solid #ffb8d4;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>STAT6207 Assignment 1 — Cat/Dog Image Analysis via ResNet18 Embeddings</h1>
+  <p>Similar-image retrieval &amp; KNN classification · ResNet18 (ImageNet) embeddings</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>Similar-Image Retrieval</h2>
+    <div class="meta">
+      <span class="badge">ResNet18 embedding</span>
+      <span class="badge">512-d feature vector</span>
+      <span class="badge">cosine similarity</span>
+    </div>
+    <p class="caption" style="margin-top:0">
+      One image is randomly chosen as the query and its ResNet18 embedding is compared
+      against the embeddings of the other 199 images using cosine similarity. The 5 most
+      similar and 5 least similar images are shown together with the query.
+    </p>
+    <div class="figure">
+      <img src="./similarity_figure.png" alt="Similar-image retrieval results">
+      <div class="caption">
+        The query image is shown in the center; the row above shows the
+        5 most similar images and the row below shows the 5 least similar images,
+        each annotated with its cosine similarity value.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>KNN Classification on Unseen Images</h2>
+    <div class="meta">
+      <span class="badge">KNN k=5</span>
+      <span class="badge">cosine distance</span>
+      <span class="badge">weights=distance</span>
+    </div>
+    <p class="caption" style="margin-top:0">
+      The classifier was trained on the 200 ResNet18 embeddings from <em>pets_sample</em>
+      (100 cats + 100 dogs). To see how well it generalizes, fresh test images were sampled
+      from the Oxford-IIIT Pet dataset cache and verified to be content-distinct from the
+      training set (md5 comparison). Every test image is shown with its predicted and
+      ground-truth label; any misclassification is outlined in red.
+    </p>
+
+    <h3 style="margin:20px 0 4px; font-size:16px">Round 1 — 10 unseen images</h3>
+    <p class="caption" style="margin-top:0">
+      First, the performance is visualized on 10 unseen images (5 cats + 5 dogs),
+      highlighting any failed cases. All 10 images were classified correctly
+      (100% accuracy), so there were no failed cases to mark.
+    </p>
+    <div class="figure">
+      <img src="./knn_prediction_results_10.png" alt="KNN test results (10 unseen images, all correct)">
+      <div class="caption">
+        The 10 unseen test images with predicted vs. ground-truth labels
+        (2×5 grid); red borders would indicate misclassifications.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Follow-up Validation on 40 Unseen Images</h2>
+    <div class="meta">
+      <span class="badge good">100% accuracy (40/40)</span>
+    </div>
+    <p class="caption" style="margin-top:0">
+      As a complementary check on the stability of the result, the test was repeated with a
+      larger sample of 40 unseen images (20 cats + 20 dogs). The figure below shows every
+      test image with predicted vs. ground-truth labels; any misclassification is outlined in
+      red. All 40 images were classified correctly (100% accuracy, no misclassifications).
+    </p>
+    <div class="figure">
+      <img src="./knn_prediction_results_40.png" alt="KNN test results (40 unseen images, all correct)">
+      <div class="caption">
+        The 40 unseen test images with predicted vs. ground-truth labels (5×8 grid).
+      </div>
+    </div>
+    <div class="note">
+      <strong>Why a second round of testing?</strong> In the first round, all 10 unseen images
+      were classified correctly — no failure cases were found. Since a flawless result on only
+      10 images could be coincidental, a second, larger round was run with 40 unseen images to
+      check whether a bigger sample would reveal any failure cases. The result was stable: the
+      40 unseen images were still all classified correctly, again yielding 100% accuracy with
+      no misclassifications.
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Generated by Python scripts: extract_embeddings.py · query_similarity.py · train_knn.py · test_knn_new_images.py
+</footer>
+
+</body>
+</html>
